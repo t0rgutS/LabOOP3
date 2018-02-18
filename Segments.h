@@ -5,7 +5,7 @@
 
 class Segment {
 protected:
-    float pointcrd[2][10], segcrd[10], length;
+    float pointcrd[2][10], length;
     bool entered;
 public:
     Segment();

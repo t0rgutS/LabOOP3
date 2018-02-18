@@ -12,7 +12,6 @@ Segment::Segment() {
     for (int i = 0; i < 10; i++) {
         pointcrd[1][i] = 0;
         pointcrd[2][i] = 0;
-        segcrd[i] = 0;
     }
     entered = false;
 }
