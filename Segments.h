@@ -5,16 +5,20 @@
 
 class Segment {
 protected:
+    int n;
+    char s1[10];
     float pointcrd[2][10], length;
     bool entered;
 public:
     Segment();
 
-    virtual void enterParam(int);
+    void menu();
 
-    virtual void display(int);
+    virtual void enterParam();
 
-    void findLength(int);
+    virtual void display();
+
+    void findLength();
 };
 
 class ColorSegment : public Segment {
@@ -24,9 +28,9 @@ public:
 
     void setColor();
 
-    virtual void enterParam(int);
+    virtual void enterParam();
 
-    virtual void display(int);
+    virtual void display();
 };
 
 #endif

@@ -8,19 +8,20 @@
 using namespace std;
 
 Segment::Segment() {
-    length = 0;
+    n = 0;
+    length = -1;
     for (int i = 0; i < 10; i++) {
+        pointcrd[0][i] = 0;
         pointcrd[1][i] = 0;
-        pointcrd[2][i] = 0;
     }
     entered = false;
+    strcpy(s1, "");
 }
 
-void Segment::enterParam(int n) {
+void Segment::enterParam() {
     int i, j, cnt;
-    char c, s1[10];
+    char c;
     bool error;
-    strcpy(s1, "");
     do {
         printf("Для каждой точки - %d координат(-ы).\n", n);
         for (i = 0; i < 2; i++) {
@@ -59,21 +60,20 @@ void Segment::enterParam(int n) {
             } while (c != 't' && c != 'f');
         }
     } while (error);
-    length = 0;
+    length = -1;
     if (!entered)
         entered = true;
 }
 
-void Segment::display(int n) {
-    char s2[10];
+void Segment::display() {
     if (entered) {
         printf("Параметры вашего отрезка:\n");
         for (int i = 0; i < 2; i++) {
             if (i == 0)
-                strcpy(s2, "начала");
+                strcpy(s1, "начала");
             else
-                strcpy(s2, "конца");
-            printf("\tКоординаты точки %s: ", s2);
+                strcpy(s1, "конца");
+            printf("\tКоординаты точки %s: ", s1);
             for (int j = 0; j < n; j++) {
                 printf("%6.2f", pointcrd[i][j]);
                 if (j != n - 1)
@@ -83,17 +83,18 @@ void Segment::display(int n) {
             }
             printf("\n");
         }
-        if (length != 0)
+        if (length != -1)
             printf("\tДлина вашего отрезка: %6.2f.\n", length);
         else
-            printf("Длина отрезка еще не посчитана или равна 0.\n");
+            printf("Длина отрезка еще не посчитана.\n");
     } else
         printf("Сперва введите параметры!\n");
 }
 
-void Segment::findLength(int n) {
-    if (length == 0) {
+void Segment::findLength() {
+    if (length == -1) {
         if (entered) {
+            length++;
             for (int i = 0; i < n; i++)
                 length += sqrt((pointcrd[1][i] - pointcrd[0][i]) * (pointcrd[1][i] - pointcrd[0][i]));
             printf("Длина вашего отрезка (%6.2f) успешно посчитана.\n", length);
@@ -101,6 +102,62 @@ void Segment::findLength(int n) {
             printf("Сначала введите параметры!\n");
     } else
         printf("Длина отрезка уже посчитана!\n");
+}
+
+void Segment::menu() {
+    char key;
+    bool error;
+    while (key != 'b') {
+        do {
+            printf("Введите размерность пространства (1, 2, 3 и т.п.): ");
+            error = false;
+            if (scanf("%d", &n) != 1) {
+                printf("Введите, пожалуйста, число!\n");
+                error = true;
+            } else if (n <= 0) {
+                printf("Размерность пространства должна быть положительной!\n");
+                error = true;
+            } else if (n > 10) {
+                printf("Слишком большая размерность пространства!\n");
+                error = true;
+            }
+        } while (error);
+        fflush(stdin);
+        printf("Размерность вашего пространства: %d (%d координат(-ы) для каждой точки)."
+                       "\nВы уверены?\n\tДа - 't';\n\tНет, ввести заново - 'f';"
+                       "\n\tНет, вернуться назад - 'b'.\n", n, n);
+        key = getchar();
+        fflush(stdin);
+        key = tolower(key);
+        if (key == 't') {
+            while (key != 'b') {
+                printf("Введите:\n\t'e' - для ввода параметров отрезка\n\t'd' - для отображения параметров отрезка\n\t"
+                               "'l' - для нахождения длины отрезка;\n\t'b' - назад.\n");
+                key = getchar();
+                fflush(stdin);
+                key = tolower(key);
+                switch (key) {
+                    case 'e':
+                        enterParam();
+                        break;;
+                    case 'd':
+                        display();
+                        break;;
+                    case 'l':
+                        findLength();
+                        break;;
+                    case 'b':
+                        break;;
+                    default:
+                        printf("Введен неверный символ!\n");
+                        break;;
+                }
+            }
+        } else if (key != 'f' && key != 'b') {
+            printf("Ошибка! Введен неверный символ!\n");
+            system("pause");
+        }
+    }
 }
 
 ColorSegment::ColorSegment() {
@@ -127,20 +184,20 @@ void ColorSegment::setColor() {
     } while (error);
 }
 
-void ColorSegment::enterParam(int n) {
+void ColorSegment::enterParam() {
     int i, j, cnt;
-    char c, s3[10];
+    char c;
     bool error;
     setColor();
     do {
         printf("Для каждой точки - %d координат(-ы).\n", n);
         for (i = 0; i < 2; i++) {
             if (i == 0)
-                strcpy(s3, "начала");
+                strcpy(s1, "начала");
             else
-                strcpy(s3, "конца");
+                strcpy(s1, "конца");
             for (j = 0; j < n; j++) {
-                printf("Введите координату точки %s отрезка: ", s3);
+                printf("Введите координату точки %s отрезка: ", s1);
                 while (scanf("%f", &pointcrd[i][j]) != 1) {
                     printf("Введите, пожалуйста, число: ");
                     _flushall();
@@ -179,23 +236,22 @@ void ColorSegment::enterParam(int n) {
             }
         }
     } while (error);
-    length = 0;
+    length = -1;
     if (!entered)
         entered = true;
 }
 
-void ColorSegment::display(int n) {
-    char s4[10];
+void ColorSegment::display() {
     char k;
     if (entered) {
         printf("Параметры вашего отрезка:\n");
         printf("\tЦвет: %15s\n", color);
         for (int i = 0; i < 2; i++) {
             if (i == 0)
-                strcpy(s4, "начала");
+                strcpy(s1, "начала");
             else
-                strcpy(s4, "конца");
-            printf("\tКоординаты точки %s: ", s4);
+                strcpy(s1, "конца");
+            printf("\tКоординаты точки %s: ", s1);
             for (int j = 0; j < n; j++) {
                 printf("%6.2f", pointcrd[i][j]);
                 if (j != n - 1)
@@ -205,16 +261,16 @@ void ColorSegment::display(int n) {
             }
             printf("\n");
         }
-        if (length != 0)
+        if (length != -1)
             printf("\tДлина вашего отрезка: %6.2f.\n", length);
         else {
-            printf("Длина отрезка еще не посчитана или равна 0. Посчитать?\n\tДа - 't'\n\tНет - 'f'.\n");
+            printf("Длина отрезка еще не посчитана. Посчитать?\n\tДа - 't'\n\tНет - 'f'.\n");
             k = getchar();
             fflush(stdin);
             k = tolower(k);
             switch (k) {
                 case 't':
-                    findLength(n);
+                    findLength();
                     break;;
                 case 'f':
                     break;;
@@ -229,7 +285,7 @@ void ColorSegment::display(int n) {
         fflush(stdin);
         k = tolower(k);
         if (k == 't')
-            enterParam(n);
+            enterParam();
         else if (k != 'f')
             printf("Введен неверный символ!\n");
     }
