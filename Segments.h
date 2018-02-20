@@ -14,6 +14,10 @@ public:
 
     void menu();
 
+    int setParams();
+
+    bool getParams();
+
     virtual void enterParam();
 
     virtual void display();

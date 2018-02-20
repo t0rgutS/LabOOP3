@@ -16,48 +16,76 @@ Segment::Segment() {
     strcpy(s1, "");
 }
 
-void Segment::enterParam() {
+int Segment::setParams() {
     int i, j, cnt;
-    char c;
-    bool error;
-    do {
-        printf("Для каждой точки - %d координат(-ы).\n", razm);
-        for (i = 0; i < 2; i++) {
-            if (i == 0)
-                strcpy(s1, "начала");
-            else
-                strcpy(s1, "конца");
-            for (j = 0; j < razm; j++) {
-                printf("Введите координату точки %s отрезка: ", s1);
-                while (scanf("%f", &pointcrd[i][j]) != 1) {
-                    printf("Введите число: ");
-                    _flushall();
-                }
-                fflush(stdin);
+    printf("Для каждой точки - %d координат(-ы).\n", razm);
+    for (i = 0; i < 2; i++) {
+        if (i == 0)
+            strcpy(s1, "начала");
+        else
+            strcpy(s1, "конца");
+        for (j = 0; j < razm; j++) {
+            printf("Введите координату точки %s отрезка: ", s1);
+            while (scanf("%f", &pointcrd[i][j]) != 1) {
+                printf("Введите число: ");
+                _flushall();
             }
+            fflush(stdin);
         }
-        error = false;
-        cnt = 0;
-        for (i = 0; i < razm - 1; i++)
-            if (pointcrd[0][i] == pointcrd[0][i + 1] && pointcrd[1][i] == pointcrd[1][i + 1])
-                cnt++;
-        if (cnt == razm - 1) {
-            do {
-                printf("Введенные координаты образуют одну точку и не могут служить началом и концом отрезка. "
-                               "Ввести другие координаты?\n\tДа - 't';\n\tНет - 'f'.\n");
-                c = getchar();
-                fflush(stdin);
-                c = tolower(c);
-                switch (c) {
-                    case 't':
-                        error = true;
-                        break;;
-                    case 'f':
-                        break;;
-                }
-            } while (c != 't' && c != 'f');
+    }
+    cnt = 0;
+    for (i = 0; i < razm - 1; i++)
+        if (pointcrd[0][i] == pointcrd[0][i + 1] && pointcrd[1][i] == pointcrd[1][i + 1])
+            cnt++;
+    return cnt;
+}
+
+bool Segment::getParams() {
+    for (int i = 0; i < 2; i++) {
+        if (i == 0)
+            strcpy(s1, "начала");
+        else
+            strcpy(s1, "конца");
+        printf("\tКоординаты точки %s: ", s1);
+        for (int j = 0; j < razm; j++) {
+            printf("%6.2f", pointcrd[i][j]);
+            if (j != razm - 1)
+                printf(", ");
+            else
+                printf(".");
         }
-    } while (error);
+        printf("\n");
+    }
+    if (length != -1) {
+        printf("\tДлина вашего отрезка: %6.2f.\n", length);
+        return true;
+    } else {
+        printf("Длина отрезка еще не посчитана.\n");
+        return false;
+    }
+}
+
+void Segment::enterParam() {
+    char c;
+    if (setParams() == razm - 1) {
+        do {
+            printf("Введенные координаты образуют одну точку и не могут служить началом и концом отрезка. "
+                           "Ввести другие координаты?\n\tДа - 't';\n\tНет - 'f'.\n");
+            c = getchar();
+            fflush(stdin);
+            c = tolower(c);
+            switch (c) {
+                case 't':
+                    setParams();
+                    break;;
+                case 'f':
+                    break;;
+                default:
+                    printf("Введен неверный символ!\n");
+                    break;;
+            }
+        } while (c != 't' && c != 'f');
+    }
     length = -1;
     if (!entered)
         entered = true;
@@ -66,25 +94,7 @@ void Segment::enterParam() {
 void Segment::display() {
     if (entered) {
         printf("Параметры вашего отрезка:\n");
-        for (int i = 0; i < 2; i++) {
-            if (i == 0)
-                strcpy(s1, "начала");
-            else
-                strcpy(s1, "конца");
-            printf("\tКоординаты точки %s: ", s1);
-            for (int j = 0; j < razm; j++) {
-                printf("%6.2f", pointcrd[i][j]);
-                if (j != razm - 1)
-                    printf(", ");
-                else
-                    printf(".");
-            }
-            printf("\n");
-        }
-        if (length != -1)
-            printf("\tДлина вашего отрезка: %6.2f.\n", length);
-        else
-            printf("Длина отрезка еще не посчитана.\n");
+        getParams();
     } else
         printf("Сперва введите параметры!\n");
 }
@@ -107,13 +117,13 @@ void Segment::menu() {
     bool error;
     while (key != 'b') {
         do {
-            printf("Введите размерность пространства (1, 2, 3 и т.п.): ");
+            printf("Введите размерность пространства (2, 3, 4 и т.п.): ");
             error = false;
             if (scanf("%d", &razm) != 1) {
                 printf("Введите число!\n");
                 error = true;
-            } else if (razm <= 0) {
-                printf("Размерность пространства должна быть положительной!\n");
+            } else if (razm <= 1) {
+                printf("Размерность пространства должна быть больше 1!\n");
                 error = true;
             } else if (razm > 10) {
                 printf("Слишком большая размерность пространства!\n");
@@ -184,57 +194,33 @@ void ColorSegment::setColor() {
 }
 
 void ColorSegment::enterParam() {
-    int i, j, cnt;
     char c;
-    bool error;
     setColor();
-    do {
-        printf("Для каждой точки - %d координат(-ы).\n", razm);
-        for (i = 0; i < 2; i++) {
-            if (i == 0)
-                strcpy(s1, "начала");
-            else
-                strcpy(s1, "конца");
-            for (j = 0; j < razm; j++) {
-                printf("Введите координату точки %s отрезка: ", s1);
-                while (scanf("%f", &pointcrd[i][j]) != 1) {
-                    printf("Введите число: ");
-                    _flushall();
-                }
-                fflush(stdin);
-            }
+    if (setParams() == razm - 1) {
+        printf("Введенные координаты образуют одну точку. Хотите ввести другие?\n\tДа - 't';\n\tНет - 'f'.\n"
+                       "\tЕсли желаете, пользуясь случаем, изменить цвет - введите 'c';\n\t"
+                       "Изменить и цвет, и координаты - 'r'.\n");
+        c = getchar();
+        fflush(stdin);
+        c = tolower(c);
+        switch (c) {
+            case 't':
+                setParams();
+                break;;
+            case 'f':
+                break;;
+            case 'c':
+                setColor();
+                break;;
+            case 'r':
+                setColor();
+                setParams();
+                break;;
+            default:
+                printf("Введен неверный символ!\n");
+                break;;
         }
-        error = false;
-        cnt = 0;
-        for (i = 0; i < razm - 1; i++)
-            if (pointcrd[0][i] == pointcrd[0][i + 1] && pointcrd[1][i] == pointcrd[1][i + 1])
-                cnt++;
-        if (cnt == razm - 1) {
-            printf("Введенные координаты образуют одну точку. Хотите ввести другие?\n\tДа - 't';\n\tНет - 'f'.\n"
-                           "\tЕсли желаете, пользуясь случаем, изменить цвет - введите 'c';\n\t"
-                           "Изменить и цвет, и координаты - 'r'.\n");
-            c = getchar();
-            fflush(stdin);
-            c = tolower(c);
-            switch (c) {
-                case 't':
-                    error = true;
-                    break;;
-                case 'f':
-                    break;;
-                case 'c':
-                    setColor();
-                    break;;
-                case 'r':
-                    setColor();
-                    error = true;
-                    break;;
-                default:
-                    printf("Введен неверный символ!\n");
-                    break;;
-            }
-        }
-    } while (error);
+    }
     length = -1;
     if (!entered)
         entered = true;
@@ -245,25 +231,8 @@ void ColorSegment::display() {
     if (entered) {
         printf("Параметры вашего отрезка:\n");
         printf("\tЦвет: %15s\n", color);
-        for (int i = 0; i < 2; i++) {
-            if (i == 0)
-                strcpy(s1, "начала");
-            else
-                strcpy(s1, "конца");
-            printf("\tКоординаты точки %s: ", s1);
-            for (int j = 0; j < razm; j++) {
-                printf("%6.2f", pointcrd[i][j]);
-                if (j != razm - 1)
-                    printf(", ");
-                else
-                    printf(".");
-            }
-            printf("\n");
-        }
-        if (length != -1)
-            printf("\tДлина вашего отрезка: %6.2f.\n", length);
-        else {
-            printf("Длина отрезка еще не посчитана. Посчитать?\n\tДа - 't'\n\tНет - 'f'.\n");
+        if (!getParams()) {
+            printf("Посчитать?\n\tДа - 't'\n\tНет - 'f'.\n");
             k = getchar();
             fflush(stdin);
             k = tolower(k);
