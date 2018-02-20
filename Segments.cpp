@@ -66,9 +66,11 @@ bool Segment::getParams() {
 }
 
 void Segment::enterParam() {
+    int i;
     char c;
-    if (setParams() == razm - 1) {
-        do {
+    i = setParams();
+    if (razm != 1) {
+        while (i == razm - 1 && c != 'f') {
             printf("Введенные координаты образуют одну точку и не могут служить началом и концом отрезка. "
                            "Ввести другие координаты?\n\tДа - 't';\n\tНет - 'f'.\n");
             c = getchar();
@@ -76,7 +78,7 @@ void Segment::enterParam() {
             c = tolower(c);
             switch (c) {
                 case 't':
-                    setParams();
+                    i = setParams();
                     break;;
                 case 'f':
                     break;;
@@ -84,7 +86,7 @@ void Segment::enterParam() {
                     printf("Введен неверный символ!\n");
                     break;;
             }
-        } while (c != 't' && c != 'f');
+        }
     }
     length = -1;
     if (!entered)
@@ -117,13 +119,13 @@ void Segment::menu() {
     bool error;
     while (key != 'b') {
         do {
-            printf("Введите размерность пространства (2, 3, 4 и т.п.): ");
+            printf("Введите размерность пространства (1, 2, 3 и т.п.): ");
             error = false;
             if (scanf("%d", &razm) != 1) {
                 printf("Введите число!\n");
                 error = true;
-            } else if (razm <= 1) {
-                printf("Размерность пространства должна быть больше 1!\n");
+            } else if (razm <= 0) {
+                printf("Размерность пространства должна быть положительной!\n");
                 error = true;
             } else if (razm > 10) {
                 printf("Слишком большая размерность пространства!\n");
@@ -131,7 +133,7 @@ void Segment::menu() {
             }
         } while (error);
         fflush(stdin);
-        printf("Размерность вашего пространства: %d (%d координат(-ы) для каждой точки)."
+        printf("Размерность вашего пространства: %d (%d координат(-а/-ы) для каждой точки)."
                        "\nВы уверены?\n\tДа - 't';\n\tНет, ввести заново - 'f';"
                        "\n\tНет, вернуться назад - 'b'.\n", razm, razm);
         key = getchar();
@@ -194,31 +196,34 @@ void ColorSegment::setColor() {
 }
 
 void ColorSegment::enterParam() {
+    int i;
     char c;
     setColor();
-    if (setParams() == razm - 1) {
-        printf("Введенные координаты образуют одну точку. Хотите ввести другие?\n\tДа - 't';\n\tНет - 'f'.\n"
-                       "\tЕсли желаете, пользуясь случаем, изменить цвет - введите 'c';\n\t"
-                       "Изменить и цвет, и координаты - 'r'.\n");
-        c = getchar();
-        fflush(stdin);
-        c = tolower(c);
-        switch (c) {
-            case 't':
-                setParams();
-                break;;
-            case 'f':
-                break;;
-            case 'c':
-                setColor();
-                break;;
-            case 'r':
-                setColor();
-                setParams();
-                break;;
-            default:
-                printf("Введен неверный символ!\n");
-                break;;
+    i = setParams();
+    if (razm != 1) {
+        while (i == razm - 1 && c != 'f' && c != 'c') {
+            printf("Введенные координаты образуют одну точку. Хотите ввести другие?\n\tДа - 't';\n\tНет - 'f'.\n"
+                           "\tИзменить цвет и координаты - 'r';\n\tИзменить только цвет - 'c'.\n");
+            c = getchar();
+            fflush(stdin);
+            c = tolower(c);
+            switch (c) {
+                case 't':
+                    i = setParams();
+                    break;;
+                case 'f':
+                    break;;
+                case 'r':
+                    setColor();
+                    i = setParams();
+                    break;;
+                case 'c':
+                    setColor();
+                    break;;
+                default:
+                    printf("Введен неверный символ!\n");
+                    break;;
+            }
         }
     }
     length = -1;
