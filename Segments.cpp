@@ -5,10 +5,8 @@
 #include <math.h>
 #include <string.h>
 
-using namespace std;
-
 Segment::Segment() {
-    n = 0;
+    razm = 0;
     length = -1;
     for (int i = 0; i < 10; i++) {
         pointcrd[0][i] = 0;
@@ -23,16 +21,16 @@ void Segment::enterParam() {
     char c;
     bool error;
     do {
-        printf("Для каждой точки - %d координат(-ы).\n", n);
+        printf("Для каждой точки - %d координат(-ы).\n", razm);
         for (i = 0; i < 2; i++) {
             if (i == 0)
                 strcpy(s1, "начала");
             else
                 strcpy(s1, "конца");
-            for (j = 0; j < n; j++) {
+            for (j = 0; j < razm; j++) {
                 printf("Введите координату точки %s отрезка: ", s1);
                 while (scanf("%f", &pointcrd[i][j]) != 1) {
-                    printf("Введите, пожалуйста, число: ");
+                    printf("Введите число: ");
                     _flushall();
                 }
                 fflush(stdin);
@@ -40,10 +38,10 @@ void Segment::enterParam() {
         }
         error = false;
         cnt = 0;
-        for (i = 0; i < n - 1; i++)
+        for (i = 0; i < razm - 1; i++)
             if (pointcrd[0][i] == pointcrd[0][i + 1] && pointcrd[1][i] == pointcrd[1][i + 1])
                 cnt++;
-        if (cnt == n - 1) {
+        if (cnt == razm - 1) {
             do {
                 printf("Введенные координаты образуют одну точку и не могут служить началом и концом отрезка. "
                                "Ввести другие координаты?\n\tДа - 't';\n\tНет - 'f'.\n");
@@ -74,9 +72,9 @@ void Segment::display() {
             else
                 strcpy(s1, "конца");
             printf("\tКоординаты точки %s: ", s1);
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < razm; j++) {
                 printf("%6.2f", pointcrd[i][j]);
-                if (j != n - 1)
+                if (j != razm - 1)
                     printf(", ");
                 else
                     printf(".");
@@ -95,7 +93,7 @@ void Segment::findLength() {
     if (length == -1) {
         if (entered) {
             length++;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < razm; i++)
                 length += sqrt((pointcrd[1][i] - pointcrd[0][i]) * (pointcrd[1][i] - pointcrd[0][i]));
             printf("Длина вашего отрезка (%6.2f) успешно посчитана.\n", length);
         } else
@@ -111,13 +109,13 @@ void Segment::menu() {
         do {
             printf("Введите размерность пространства (1, 2, 3 и т.п.): ");
             error = false;
-            if (scanf("%d", &n) != 1) {
-                printf("Введите, пожалуйста, число!\n");
+            if (scanf("%d", &razm) != 1) {
+                printf("Введите число!\n");
                 error = true;
-            } else if (n <= 0) {
+            } else if (razm <= 0) {
                 printf("Размерность пространства должна быть положительной!\n");
                 error = true;
-            } else if (n > 10) {
+            } else if (razm > 10) {
                 printf("Слишком большая размерность пространства!\n");
                 error = true;
             }
@@ -125,7 +123,7 @@ void Segment::menu() {
         fflush(stdin);
         printf("Размерность вашего пространства: %d (%d координат(-ы) для каждой точки)."
                        "\nВы уверены?\n\tДа - 't';\n\tНет, ввести заново - 'f';"
-                       "\n\tНет, вернуться назад - 'b'.\n", n, n);
+                       "\n\tНет, вернуться назад - 'b'.\n", razm, razm);
         key = getchar();
         fflush(stdin);
         key = tolower(key);
@@ -158,6 +156,7 @@ void Segment::menu() {
             system("pause");
         }
     }
+    entered = false;
 }
 
 ColorSegment::ColorSegment() {
@@ -190,16 +189,16 @@ void ColorSegment::enterParam() {
     bool error;
     setColor();
     do {
-        printf("Для каждой точки - %d координат(-ы).\n", n);
+        printf("Для каждой точки - %d координат(-ы).\n", razm);
         for (i = 0; i < 2; i++) {
             if (i == 0)
                 strcpy(s1, "начала");
             else
                 strcpy(s1, "конца");
-            for (j = 0; j < n; j++) {
+            for (j = 0; j < razm; j++) {
                 printf("Введите координату точки %s отрезка: ", s1);
                 while (scanf("%f", &pointcrd[i][j]) != 1) {
-                    printf("Введите, пожалуйста, число: ");
+                    printf("Введите число: ");
                     _flushall();
                 }
                 fflush(stdin);
@@ -207,10 +206,10 @@ void ColorSegment::enterParam() {
         }
         error = false;
         cnt = 0;
-        for (i = 0; i < n - 1; i++)
+        for (i = 0; i < razm - 1; i++)
             if (pointcrd[0][i] == pointcrd[0][i + 1] && pointcrd[1][i] == pointcrd[1][i + 1])
                 cnt++;
-        if (cnt == n - 1) {
+        if (cnt == razm - 1) {
             printf("Введенные координаты образуют одну точку. Хотите ввести другие?\n\tДа - 't';\n\tНет - 'f'.\n"
                            "\tЕсли желаете, пользуясь случаем, изменить цвет - введите 'c';\n\t"
                            "Изменить и цвет, и координаты - 'r'.\n");
@@ -252,9 +251,9 @@ void ColorSegment::display() {
             else
                 strcpy(s1, "конца");
             printf("\tКоординаты точки %s: ", s1);
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < razm; j++) {
                 printf("%6.2f", pointcrd[i][j]);
-                if (j != n - 1)
+                if (j != razm - 1)
                     printf(", ");
                 else
                     printf(".");

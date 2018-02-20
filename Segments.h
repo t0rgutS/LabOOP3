@@ -5,7 +5,7 @@
 
 class Segment {
 protected:
-    int n;
+    int razm;
     char s1[10];
     float pointcrd[2][10], length;
     bool entered;
